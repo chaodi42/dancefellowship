@@ -78,8 +78,12 @@ function clearModalInputs() {
     document.getElementById('studentEmail').value = '';
     document.getElementById('studentPhone').value = '';
     document.getElementById('studentGroup').value = '';
-    document.getElementById('studentBackground').value = '基督徒';
-    const genderBro = document.querySelector('input[name="gender"][value="弟兄"]');
-    if (genderBro) genderBro.checked = true;
+
+    const genderSis = document.querySelector('input[name="gender"][value="姊妹"]');
+    if (genderSis) genderSis.checked = true;
+
+    const bgChristian = document.querySelector('input[name="background"][value="基督徒"]');
+    if (bgChristian) bgChristian.checked = true;
+
     document.getElementById('markPresent').checked = true;
 }
