@@ -43,22 +43,13 @@ function renderRoster() {
         emailSpan.className = 'student-email';
         emailSpan.textContent = student.email || '';
 
-        // Meta line: group, gender, background
-        const metaParts = [];
-        if (student.group) metaParts.push(student.group);
-        if (student.gender) metaParts.push(student.gender);
-        if (student.background) metaParts.push(student.background);
-        if (metaParts.length) {
-            const metaSpan = document.createElement('div');
-            metaSpan.className = 'student-meta';
-            metaSpan.textContent = metaParts.join(' · ');
-            infoDiv.appendChild(nameSpan);
-            infoDiv.appendChild(emailSpan);
-            infoDiv.appendChild(metaSpan);
-        } else {
-            infoDiv.appendChild(nameSpan);
-            infoDiv.appendChild(emailSpan);
-        }
+        const groupSpan = document.createElement('div');
+        groupSpan.className = 'student-meta';
+        groupSpan.textContent = student.group || '';
+
+        infoDiv.appendChild(nameSpan);
+        if (emailSpan.textContent) infoDiv.appendChild(emailSpan);
+        if (groupSpan.textContent) infoDiv.appendChild(groupSpan);
 
         const checkWrapper = document.createElement('div');
         checkWrapper.className = 'attendance-checkbox';
