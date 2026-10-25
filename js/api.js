@@ -62,16 +62,25 @@ async function loadDataFromGoogleSheets() {
     if (container) container.innerHTML = '<li class="loading-spinner">📖 載入成員資料中...</li>';
 
     try {
-        console.log('📡 Fetching info CSV from:', CONFIG.INFO_CSV_URL);
-        const response = await fetch(CONFIG.INFO_CSV_URL);
+        console.log('📡 Fetching members from:', CONFIG.API_URL);
+        const response = await fetch(CONFIG.API_URL);
         if (!response.ok) throw new Error('HTTP ' + response.status);
-        const csvText = await response.text();
-        console.log('📡 CSV received, length:', csvText.length);
 
-        const rows = parseCSV(csvText);
-        console.log('📡 Parsed rows:', rows);
+        const result = await response.json();
+        console.log('📡 Response:', result);
 
-        if (!rows || rows.length === 0) {
+        if (!result.success) {
+            if (container) container.innerHTML = '<li class="error-message">⚠️ ' + (result.message || '無法載入資料') + '</li>';
+            setSyncStatus('error', '❌ 載入失敗');
+            students = [];
+            attendance = {};
+            updateSummaryStats();
+            return;
+        }
+
+        const rows = result.students || [];
+
+        if (rows.length === 0) {
             if (container) container.innerHTML = '<li style="text-align:center;padding:30px;color:#666;">📭 尚未有成員資料<br><small>請在 Google Sheets 的 "Info" 分頁中加入成員資料</small></li>';
             students = [];
             attendance = {};
@@ -80,17 +89,18 @@ async function loadDataFromGoogleSheets() {
             return;
         }
 
-        // Map CSV columns to student objects
-        students = rows.map((row, idx) => ({
-            id: row.ID || String(idx + 1),
-            name: row.Name || '',
-            email: row.Email || '',
-            phone: row.Phone || '',
-            group: row.Group || '',
-            gender: row.Gender || '',
-            background: row.Background || '',
-            temporary: false
-        })).filter(s => s.name);
+        students = rows
+            .filter(s => s.name && String(s.name).trim() !== '')
+            .map((row, idx) => ({
+                id: row.id !== undefined && row.id !== null && row.id !== '' ? row.id : String(idx + 1),
+                name: String(row.name).trim(),
+                email: row.email || '',
+                phone: row.phone || '',
+                group: row.group || '',
+                gender: row.gender || '',
+                background: row.background || '',
+                temporary: false
+            }));
 
         // Sort by numeric ID
         students.sort((a, b) => {
@@ -105,7 +115,7 @@ async function loadDataFromGoogleSheets() {
         students.forEach((_, idx) => { attendance[idx] = false; });
 
         setSyncStatus('synced', '✅ 已同步 (' + students.length + '位成員)');
-        console.log('✅ Loaded ' + students.length + ' members from Info tab');
+        console.log('✅ Loaded ' + students.length + ' members via Apps Script');
 
         renderRoster();
         updateSummaryStats();
