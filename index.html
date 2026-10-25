@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <title>CBCGB舞蹈團契簽到系統</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>💃 CBCGB舞蹈團契 💃</h1>
+
+    <div class="tab-bar">
+        <button class="tab-button active" id="tabAttendanceBtn">📋 出席記錄</button>
+        <button class="tab-button" id="tabHistoryBtn">📊 匯總記錄</button>
+    </div>
+
+    <!-- Attendance Tab -->
+    <div id="attendanceTab" class="tab-content active">
+        <div class="date-header">
+            📅 <span id="currentDate"></span>
+            <span id="syncStatus" class="sync-status synced">✅ 已同步</span>
+        </div>
+
+        <ul class="student-list" id="studentList">
+            <li class="loading-spinner">📖 載入成員資料中...</li>
+        </ul>
+
+        <button class="add-student-btn" id="openModalBtn">➕ 加入新成員</button>
+
+        <div class="summary">
+            <div class="summary-stats">
+                <span id="presentCount">0</span>/<span id="totalStudents">0</span> 出席
+            </div>
+
+            <div class="summary-buttons">
+                <button class="mark-all-btn" id="markAllBtn">全體出席</button>
+                <button class="reset-btn" id="resetAttendanceBtn">重設</button>
+                <button class="save-btn" id="saveAttendanceBtn">💾 保存</button>
+            </div>
+
+            <div class="share-buttons">
+                <button class="email-btn" id="emailBtn">📧 Email</button>
+                <button class="copy-btn" id="copyBtn">📋 Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="historyTab" class="tab-content">
+        <div class="history-list" id="historyList"></div>
+        <button class="export-btn" id="exportCsvBtn">📥 下載所有記錄 (CSV)</button>
+        <div id="historyDetail" class="detail-view" style="display: none;"></div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <h2>➕ 加入新成員</h2>
+            <div class="form-group">
+                <label>姓名 *</label>
+                <input type="text" id="studentName" placeholder="例如：陳大文">
+            </div>
+            <div class="form-group">
+                <label>電郵</label>
+                <input type="email" id="studentEmail" placeholder="member@example.com">
+            </div>
+            <div class="form-group">
+                <label>電話</label>
+                <input type="text" id="studentPhone" placeholder="9123-4567">
+            </div>
+            <div class="form-group">
+                <label>團契小組</label>
+                <input type="text" id="studentGroup" placeholder="舞蹈小組">
+            </div>
+            <div class="form-group">
+                <label>性別</label>
+                <div class="radio-group">
+                    <label class="radio-inline">
+                        <input type="radio" name="gender" value="弟兄" checked> 弟兄
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="gender" value="姊妹"> 姊妹
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>信仰狀況</label>
+                <select id="studentBackground">
+                    <option value="基督徒" selected>基督徒</option>
+                    <option value="慕道友">慕道友</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="markPresent" checked> 立即標記為出席
+                </label>
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="closeModalBtn">取消</button>
+                <button class="add-confirm-btn" id="confirmAddBtn">加入</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        ⚡ 點擊核取方塊記錄出席 • 資料自動儲存於 Google Sheets
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/render.js"></script>
+    <script src="js/attendance.js"></script>
+    <script src="js/student.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
