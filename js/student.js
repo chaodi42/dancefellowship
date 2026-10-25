@@ -9,8 +9,9 @@ function addNewStudentFromModal() {
     const phone = document.getElementById('studentPhone').value.trim();
     const group = document.getElementById('studentGroup').value.trim();
     const genderEl = document.querySelector('input[name="gender"]:checked');
-    const gender = genderEl ? genderEl.value : '弟兄';
-    const background = document.getElementById('studentBackground').value;
+    const gender = genderEl ? genderEl.value : '姊妹';
+    const backgroundEl = document.querySelector('input[name="background"]:checked');
+    const background = backgroundEl ? backgroundEl.value : '基督徒';
     const markNow = document.getElementById('markPresent').checked;
 
     // Prevent duplicates
