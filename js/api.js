@@ -6,33 +6,50 @@ let isSaving = false;
 
 // Parse CSV string into array of objects
 function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
+    // Strip BOM
+    csvText = csvText.replace(/^\uFEFF/, '');
+
+    // Normalize line endings
+    const lines = csvText.replace(/\r\n?/g, '\n').split('\n');
+
+    // Drop leading empty lines
+    while (lines.length && lines[0].trim() === '') lines.shift();
+
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-    const rows = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        // Simple CSV parser (handles quoted fields)
-        const values = [];
-        let current = '';
+
+    // Real CSV field splitter (handles quoted fields, escaped quotes, commas inside quotes)
+    function splitLine(line) {
+        const out = [];
+        let cur = '';
         let inQuotes = false;
-        for (let j = 0; j < line.length; j++) {
-            const ch = line[j];
-            if (ch === '"') {
-                inQuotes = !inQuotes;
-            } else if (ch === ',' && !inQuotes) {
-                values.push(current.trim());
-                current = '';
+        for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (inQuotes) {
+                if (ch === '"') {
+                    if (line[i + 1] === '"') { cur += '"'; i++; }   // escaped quote
+                    else inQuotes = false;
+                } else {
+                    cur += ch;
+                }
             } else {
-                current += ch;
+                if (ch === '"') inQuotes = true;
+                else if (ch === ',') { out.push(cur); cur = ''; }
+                else cur += ch;
             }
         }
-        values.push(current.trim());
+        out.push(cur);
+        return out.map(s => s.trim());
+    }
+
+    const headers = splitLine(lines[0]);
+
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line || line.trim() === '') continue;
+        const values = splitLine(line);
         const obj = {};
-        headers.forEach((h, idx) => {
-            obj[h] = values[idx] || '';
-        });
+        headers.forEach((h, idx) => { obj[h] = values[idx] !== undefined ? values[idx] : ''; });
         rows.push(obj);
     }
     return rows;
